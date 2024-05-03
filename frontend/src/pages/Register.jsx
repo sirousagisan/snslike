@@ -12,7 +12,7 @@ const Register = () => {
       withCredentials: true
     }).then((res) => {
       setUser({"username": "", "password": "", "email": ""})
-      navigate("/login")
+      navigate("/login", {state: {"msg":"アカウントを作成しました。"}})
     }).catch((res) => {
       setUser({"username": "", "password": "", "email": ""})
 

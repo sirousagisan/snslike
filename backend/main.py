@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette_csrf import CSRFMiddleware
+# from starlette_csrf import CSRFMiddleware
 
 from routers import user as user_router
 from routers import post as post_router 

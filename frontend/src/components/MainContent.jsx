@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 const MainContent = () => {
   const [ res, SetData ] = useState()
   useEffect(() => {
-    axios.get("http://127.0.0.1:8080/").then((res) => {
+    axios.get("http://127.0.0.1:8080/", {}, {}).then((res) => {
       console.log(res.data)
       SetData(res.data)
     }

@@ -2,7 +2,7 @@ from typing import Annotated
 from datetime import datetime, timedelta, timezone
 # from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, Depends, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt, JWTError
@@ -14,7 +14,7 @@ from models import User
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 JST = timezone(timedelta(hours=9), "JST")
 SECRET_KEY = '748b3c75448cbddffc3e231b9012d055b09f043320a11888fe84fb3684379b7b'
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 async def create_user(db:Session, user_create: UserRegister):
     new_user = User(**user_create.model_dump(exclude=["password"]) ,
@@ -46,8 +46,12 @@ def create_access_token(username: str, user_id: int, expire_delta: timedelta):
     encode.update({"exp": expires})
     return jwt.encode(encode, SECRET_KEY, algorithm="HS256")
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+# async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+async def get_current_user(request: Request):
     try:
+        token = request.cookies.get("access_token")
+        if token is None:
+            raise HTTPException(status_code=401, detail="Not verify")
         payload = jwt.decode(token=token, key=SECRET_KEY, algorithms="HS256")
         username = payload.get("sub")
         user_id = payload.get("id")
@@ -56,8 +60,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
                                 detail="Could not validate user")
         return {"username": username, "id": user_id}
     except JWTError:
+        print("JWTError")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="Could not validate user")
+                                detail="Could not validate user~")
+                                
 
 class UserForm:
     def __init__(self, request, user_form=None) -> None:

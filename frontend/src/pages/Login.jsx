@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import axios from "axios"
 
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+
+import { IsLoginContext } from '../contexts/UserContext'
 
 const Login = () => {
+  const { setIsLogin } = useContext(IsLoginContext)
   const [ User, setUser ] = useState({"username": "", "password": ""})
+  const location = useLocation()
+  const [ msg, setMsg ] = useState("")
+
   const navigate = useNavigate()
   useEffect(() => {
     const getCsrf = async () => {
@@ -12,7 +18,8 @@ const Login = () => {
       //   "http://127.0.0.1:8080/getcsrftoken",
       //   {withCredentials: true}
       // )
-      axios.defaults.headers.common['x-csrftoken'] = "tl7vthygIGGH7e63GOeUeEVNFGmhgTW1"
+      axios.defaults.headers.common['x-csrftoken'] = ""
+      setMsg(location.state.msg)
     }
     getCsrf()
   }, [])
@@ -20,8 +27,10 @@ const Login = () => {
     await axios.post("http://127.0.0.1:8080/auth/login", User,
   {withCredentials: true}).then((res) => {
     setUser({"username": "", "password": ""})
+    setIsLogin(true)
     navigate("/")
   }).catch((res) => {
+    navigate("/login")
     console.log(User)
   })
   }
@@ -30,7 +39,11 @@ const Login = () => {
 <div className="flex justify-center items-center h-screen">
     <div className="border-2 rounded-xl py-8 px-12">
       <div className="text-gray-300 text-3xl mb-12">
-        Login
+        {msg} 
+        <div className="mt-4">
+          Login
+        </div>
+        
       </div>
       
       {/* e-mail */}
