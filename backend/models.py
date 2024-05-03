@@ -16,7 +16,7 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=JST))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=JST), onupdate=datetime.now(tz=JST))
     
-    articles = relationship("Arttcle", backref="user")
+    articles = relationship("Article", backref="user")
     like = relationship("Like", backref="user")
     followers = relationship("Follow", foreign_keys="Follow.follower_id", backref="follower")
     followees = relationship("Follow", foreign_keys="Follow.followee_id", backref="followee")
@@ -27,9 +27,9 @@ class Article(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String)
     body: Mapped[str] = mapped_column(String)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=JST))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=JST), onupdate=datetime.now(tz=JST))
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"))
     likes = relationship("Like", backref="article")
     tags = relationship("ArticleTag", backref="article")
 
